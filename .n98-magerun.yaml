@@ -1,0 +1,44 @@
+# This file should be placed in your home directory
+
+autoloaders:
+  # Namespace => path to your libs
+  Frostnet: /Users/simonfrost/PhpStormProjects/Frostnet/src
+
+commands:
+  customCommands:
+    - Frostnet\Magento\Command\GenerateInstallerCommand
+
+  # optional command config
+  #MyCommandNamespace\FooCommand:
+  #  bar: zoz
+
+  N98\Magento\Command\Installer\InstallCommand:
+    magento-packages:
+      - name: magento-local-1.9.2.4
+        version: 1.9.2.4
+        dist:
+          url: http://magento.local/versions/magento-1.9.2.4.tar.gz
+          type: tar
+        extra:
+          sample-data: sample-data-local-1.9.0.0
+    demo-data-packages:
+      - name: sample-data-local-1.9.0.0
+        version: 1.9.0.0
+        dist:
+          url: http://magento.local/extras/sample-data/magento-sample-data-1.9.0.0.tar.gz
+          type: tar
+    installation:
+      defaults:
+        currency: GBP
+        locale: en_GB
+        timezone: Europe/London
+        use_secure: no
+        use_rewrites: yes
+        session_save: files
+        admin_username: admin
+        admin_firstname: Simon
+        admin_lastname: Frost
+        admin_password: password
+        admin_frontname: admin
+        admin_email: simon.frost@example.com
+        encryption_key:
