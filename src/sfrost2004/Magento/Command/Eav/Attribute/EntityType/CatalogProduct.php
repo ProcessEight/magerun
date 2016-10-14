@@ -51,8 +51,7 @@ class CatalogProduct extends AbstractEntityType implements EntityType
             'default_value'                 => 'default',
             'is_unique'                     => 'unique',
             'note'                          => 'note',
-            'group'                         => '<Label of tab the attribute appears in>',
-            'position'                      => '999',
+            'group'                         => 'group',
         );
     }
 
@@ -81,9 +80,10 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 			'used_in_product_listing'       => 0,
 			'used_for_sort_by'              => 0,
 			'apply_to'                      => 'simple',
-			'position'                      => 0,
-			'is_configurable'               => 1,
-			'is_used_for_promo_rules'       => 0
+			'position'                      => 999,
+			'is_configurable'               => 0,
+			'is_used_for_promo_rules'       => 0,
+			'group'                         => 'General',
 		));
 		return $data;
 	}
