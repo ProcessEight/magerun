@@ -2,15 +2,15 @@
 
 autoloaders:
   # Namespace => path to your libs
-  Frostnet: /Users/simonfrost/PhpStormProjects/Frostnet/src
+  sfrost2004: /Users/simonfrost/PhpStormProjects/sfrost2004/src
 
 commands:
   customCommands:
-    - Frostnet\Magento\Command\GenerateInstallerCommand
+    - sfrost2004\Magento\Command\GenerateInstallerCommand
 
   # optional command config
   #MyCommandNamespace\FooCommand:
-  #  bar: zoz
+  #  foo: bar
 
   N98\Magento\Command\Installer\InstallCommand:
     magento-packages:

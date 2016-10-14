@@ -1,6 +1,6 @@
 <?php
 /**
- * Frostnet
+ * sfrost2004
  *
  * DISCLAIMER
  *
@@ -8,32 +8,30 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact Zone8 for more information.
  *
- * @category    Frostnet
- * @package     Frostnet
- * @copyright   Copyright (c) 2016 Frostnet
- * @author      Simon Frost, Frostnet
+ * @category    sfrost2004
+ * @package     sfrost2004
+ * @copyright   Copyright (c) 2016 sfrost2004
+ * @author      Simon Frost, sfrost2004
  *
  */
 
-namespace Frostnet\Magento\Command;
+namespace sfrost2004\Magento\Command\Eav\Attribute;
 
 use N98\Magento\Command\AbstractMagentoCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Exception;
-use N98\Magento\Command\Developer\Setup\Script;
-use N98\Magento\Command\Developer\Setup\Script\Attribute\EntityType;
 
-class GenerateInstallerCommand extends AbstractMagentoCommand
+class AddCommand extends AbstractMagentoCommand
 {
 	protected function configure()
 	{
 		$this
-			->setName('frostnet:attribute')
+			->setName('eav:attribute:add')
 			->addArgument('entityType', InputArgument::REQUIRED, 'Entity Type Code like catalog_product')
 			->addArgument('attributeCode', InputArgument::REQUIRED, 'Attribute Code')
-			->setDescription('Creates attribute script for a given attribute code and adds it to a specifed attribute set and group, or the default if none is specifed');
+			->setDescription('Creates resource script to add a new attribute [sfrost2004]');
 	}
 
 	/**
@@ -53,9 +51,7 @@ class GenerateInstallerCommand extends AbstractMagentoCommand
 			$entityType = $input->getArgument('entityType');
 			$attributeCode = $input->getArgument('attributeCode');
 
-			$attribute = $this->getAttribute($entityType, $attributeCode);
-
-			$generator = Attribute\EntityType\Factory::create($entityType, $attribute);
+			$generator = EntityType\Factory::create($entityType, $attributeCode);
 			$generator->setReadConnection(
 				$this->_getModel('core/resource', 'Mage_Core_Model_Resource')->getConnection('core_read')
 			);
@@ -67,19 +63,4 @@ class GenerateInstallerCommand extends AbstractMagentoCommand
 			$output->writeln('<error>' . $e->getMessage() . '</error>');
 		}
 	}
-
-	/**
-	 * @param string $entityType
-	 * @param string $attributeCode
-	 *
-	 * @return mixed
-	 */
-	protected function getAttribute($entityType, $attributeCode)
-	{
-		$attribute = $this->_getModel('catalog/resource_eav_attribute', 'Mage_Catalog_Model_Resource_Eav_Attribute')
-		                  ->loadByCode($entityType, $attributeCode);
-
-		return $attribute;
-	}
-
 }
