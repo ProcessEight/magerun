@@ -51,6 +51,8 @@ class CatalogProduct extends AbstractEntityType implements EntityType
             'default_value'                 => 'default',
             'is_unique'                     => 'unique',
             'note'                          => 'note',
+            'group'                         => '<Label of tab the attribute appears in>',
+            'position'                      => '999',
         );
     }
 
