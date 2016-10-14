@@ -52,9 +52,6 @@ class AddCommand extends AbstractMagentoCommand
 			$attributeCode = $input->getArgument('attributeCode');
 
 			$generator = EntityType\Factory::create($entityType, $attributeCode);
-			$generator->setReadConnection(
-				$this->_getModel('core/resource', 'Mage_Core_Model_Resource')->getConnection('core_read')
-			);
 			$code = $generator->generateCode();
 			$warnings = $generator->getWarnings();
 

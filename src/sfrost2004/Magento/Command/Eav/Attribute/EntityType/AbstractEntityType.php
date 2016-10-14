@@ -98,6 +98,7 @@ abstract class AbstractEntityType implements EntityType
 			'is_unique'       => 0,
 			'note'            => NULL,
 			'is_global'       => 1,
+			'label'           => ucwords(str_replace('_', ' ', $this->attribute)),
 		);
 	}
 }

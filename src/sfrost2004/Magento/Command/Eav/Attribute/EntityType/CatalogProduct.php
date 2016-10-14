@@ -78,7 +78,7 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 			'is_filterable_in_search'       => 0,
 			'used_in_product_listing'       => 0,
 			'used_for_sort_by'              => 0,
-			'apply_to'                      => NULL,
+			'apply_to'                      => 'simple',
 			'position'                      => 0,
 			'is_configurable'               => 1,
 			'is_used_for_promo_rules'       => 0
@@ -95,7 +95,7 @@ class CatalogProduct extends AbstractEntityType implements EntityType
         $realToSetupKeyLegend = $this->_getKeyMapping();
 
         // swap keys from above
-        $data = $this->_getDefaultValues(); //$this->attribute;
+        $data = $this->_getDefaultValues();
         $keysLegend = array_keys($realToSetupKeyLegend);
         $newData = array();
 
@@ -123,19 +123,26 @@ class CatalogProduct extends AbstractEntityType implements EntityType
         //generate script using simple string concatenation, making
         //a single tear fall down the cheek of a CS professor
         $script = "<?php
+        
+/* @var \$setup Mage_Catalog_Model_Resource_Setup */
 \$setup = new Mage_Catalog_Model_Resource_Setup('core_setup');
 
+/* 
+ *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped'
+ */
 \$data = $arrayCode;
 \$setup->addAttribute('catalog_product', '" . $this->attribute . "', \$data);
             ";
 
 		$labelsScript = "
-// Add different labels for multi-store setups
-// Labels should be added in [store_id => label, ...] array format
-\$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', '" . $this->attribute . "');
-\$attribute->setStoreLabels(array (
-));
-\$attribute->save();
+/*
+ * Add different labels for multi-store setups
+ * Labels should be added in [store_id => label, ...] array format
+ */
+// \$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', '" . $this->attribute . "');
+// \$attribute->setStoreLabels(array (
+// ));
+// \$attribute->save();
 ";
 
         $script .= $labelsScript;
