@@ -36,7 +36,9 @@ class Factory
         }
 
         if (!class_exists($class)) {
-            throw new RuntimeException('No script generator for this entity type available');
+            throw new RuntimeException(
+            	'No script generator for this entity type available (The script is looking for ' . $class . ')'
+            );
         }
 
         return new $class($attributeCode);

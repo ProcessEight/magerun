@@ -51,8 +51,8 @@ class Customer extends AbstractEntityType implements EntityType
             'default_value'                 => 'default',
             'is_unique'                     => 'unique',
             'note'                          => 'note',
-            'group'                         => '<Label of tab the attribute appears in>',
-            'position'                      => '999',
+            'group'                         => 'group',
+            'position'                      => 'position',
         );
     }
 
@@ -74,6 +74,8 @@ class Customer extends AbstractEntityType implements EntityType
 			'validate_rules'            => null,
 			'data_model'                => null,
 			'sort_order'                => 0,
+			'group'                     => '<Label of tab the attribute appears in>',
+		    'position'                  => 999,
 		));
 		return $data;
 	}
@@ -115,6 +117,10 @@ class Customer extends AbstractEntityType implements EntityType
         //generate script using simple string concatenation, making
         //a single tear fall down the cheek of a CS professor
         $script = "<?php
+
+/*
+ * startSetup() and endSetup() are intentionally omitted
+ */
         
 /* @var \$setup Mage_Customer_Model_Entity_Setup */
 \$setup = new Mage_Customer_Model_Entity_Setup('core_setup');

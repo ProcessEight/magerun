@@ -17,10 +17,12 @@
 
 namespace sfrost2004\Magento\Command\Eav\Attribute\EntityType;
 
-class CatalogProduct extends AbstractEntityType implements EntityType
+class CatalogCategory extends AbstractEntityType implements EntityType
 {
     /**
-     * Gets key legend for catalog product attribute
+     * Gets key legend for catalog category attribute
+     * Note that catalog_product and catalog_category entities share the same setup resource model,
+     * so some of these fields are only relevant to catalog_product
      *
      * @return array
      */
@@ -33,11 +35,9 @@ class CatalogProduct extends AbstractEntityType implements EntityType
             'is_searchable'                 => 'searchable',
             'is_filterable'                 => 'filterable',
             'is_comparable'                 => 'comparable',
-            'is_visible_on_front'           => 'visible_on_front',
             'is_wysiwyg_enabled'            => 'wysiwyg_enabled',
             'is_visible_in_advanced_search' => 'visible_in_advanced_search',
             'is_filterable_in_search'       => 'filterable_in_search',
-            'is_used_for_promo_rules'       => 'used_for_promo_rules',
             'backend_model'                 => 'backend',
             'backend_type'                  => 'type',
             'backend_table'                 => 'table',
@@ -57,6 +57,8 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 
 	/**
 	 * Get default attribute values
+	 * Note that catalog_product and catalog_category entities share the same setup resource model,
+	 * so some of these fields are only relevant to catalog_product
 	 *
 	 * @return array
 	 */
@@ -66,24 +68,13 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 
 		// Catalog product default values
 		$data = array_merge($data, array(
-			'frontend_input_renderer'       => NULL,
 			'is_global'                     => \Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL,
 			'is_visible'                    => 1,
-			'is_searchable'                 => 0,
-			'is_filterable'                 => 0,
-			'is_comparable'                 => 0,
 			'is_visible_on_front'           => 0,
 			'is_wysiwyg_enabled'            => 0,
 			'is_html_allowed_on_front'      => 0,
-			'is_visible_in_advanced_search' => 0,
-			'is_filterable_in_search'       => 0,
-			'used_in_product_listing'       => 0,
-			'used_for_sort_by'              => 0,
-			'apply_to'                      => 'simple',
-			'position'                      => 999,
-			'is_configurable'               => 0,
-			'is_used_for_promo_rules'       => 0,
-			'group'                         => 'General',
+			'position'                      => 0,
+			'group'                         => 'General Information',
 		));
 		return $data;
 	}
@@ -129,29 +120,16 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 /*
  * startSetup() and endSetup() are intentionally omitted
  */
-        
+
 /* @var \$setup Mage_Catalog_Model_Resource_Setup */
 \$setup = new Mage_Catalog_Model_Resource_Setup('core_setup');
 
-/* 
- *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped'
+/*
+ * 'group' indicates the tab the attribute will be added to. If the tab doesn't exist, Magento will create it.
  */
 \$data = $arrayCode;
-\$setup->addAttribute('catalog_product', '" . $this->attribute . "', \$data);
+\$setup->addAttribute(Mage_Catalog_Model_Category::ENTITY, '" . $this->attribute . "', \$data);
             ";
-
-		$labelsScript = "
-/*
- * Add different labels for multi-store setups
- * Labels should be added in [store_id => label, ...] array format
- */
-// \$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', '" . $this->attribute . "');
-// \$attribute->setStoreLabels(array (
-// ));
-// \$attribute->save();
-";
-
-        $script .= $labelsScript;
 
         return $script;
     }

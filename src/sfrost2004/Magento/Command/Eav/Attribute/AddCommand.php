@@ -31,7 +31,7 @@ class AddCommand extends AbstractMagentoCommand
 			->setName('eav:attribute:add')
 			->addArgument('entityType', InputArgument::REQUIRED, 'Entity Type Code like catalog_product')
 			->addArgument('attributeCode', InputArgument::REQUIRED, 'Attribute Code')
-			->setDescription('Creates resource script to add a new attribute [sfrost2004]');
+			->setDescription('Creates resource script to add a new attribute to EAV entity [sfrost2004]');
 	}
 
 	/**
