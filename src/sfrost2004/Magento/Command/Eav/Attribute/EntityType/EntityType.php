@@ -22,7 +22,7 @@ interface EntityType
     /**
      * @param string $attributeCode
      */
-    public function __construct($attributeCode);
+    public function __construct($attributeCode, $field, $value);
 
     /**
      * @param $connection

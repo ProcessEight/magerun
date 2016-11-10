@@ -137,7 +137,7 @@ class CatalogProduct extends AbstractEntityType implements EntityType
  *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped'
  */
 \$data = $arrayCode;
-\$setup->addAttribute('catalog_product', '" . $this->attribute . "', \$data);
+\$setup->addAttribute(Mage_Catalog_Model_Product::ENTITY, '" . $this->attribute . "', \$data);
             ";
 
 		$labelsScript = "
@@ -154,5 +154,27 @@ class CatalogProduct extends AbstractEntityType implements EntityType
         $script .= $labelsScript;
 
         return $script;
+    }
+
+	/**
+	 * @return string
+	 */
+    public function generateUpdateCode()
+    {
+	    //generate script using simple string concatenation, making
+	    //a single tear fall down the cheek of a CS professor
+	    $script = "<?php
+
+/*
+ * startSetup() and endSetup() are intentionally omitted
+ */
+        
+/* @var \$setup Mage_Catalog_Model_Resource_Setup */
+\$setup = new Mage_Catalog_Model_Resource_Setup('core_setup');
+
+\$setup->updateAttribute(Mage_Catalog_Model_Product::ENTITY, '" . $this->attribute . "', \$field, \$newValue);
+            ";
+
+	    return $script;
     }
 }

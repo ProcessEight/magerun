@@ -27,7 +27,7 @@ class Factory
      *
      * @return mixed
      */
-    public static function create($entityType, $attributeCode)
+    public static function create($entityType, $attributeCode, $field = null, $value = null)
     {
         $words = explode('_', strtolower($entityType));
         $class = __NAMESPACE__ . '\\';
@@ -41,6 +41,6 @@ class Factory
             );
         }
 
-        return new $class($attributeCode);
+        return new $class($attributeCode, $field, $value);
     }
 }

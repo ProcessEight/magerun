@@ -40,16 +40,34 @@ abstract class AbstractEntityType implements EntityType
     protected $entityType;
 
     /**
+     * Field of attribute (e.g. 'is_global')
+     *
+     * @var string
+     */
+    protected $_field;
+
+    /**
+     * Value of attribute field. Not to be confused with the attribute value itself.
+     *
+     * @var string
+     */
+    protected $_value;
+
+    /**
      * @var array
      */
     protected $warnings = array();
 
-    /**
-     * @param string $attributeCode
-     */
-    public function __construct($attributeCode)
+	/**
+	 * @param string $attributeCode
+	 * @param string $field
+	 * @param string $value
+	 */
+    public function __construct($attributeCode, $field, $value)
     {
         $this->attribute = $attributeCode;
+	    $this->setField($field);
+	    $this->setValue($value);
     }
 
     /**
@@ -75,6 +93,60 @@ abstract class AbstractEntityType implements EntityType
     {
         return $this->warnings;
     }
+
+	/**
+	 * @return string
+	 */
+	public function getAttribute() {
+		return $this->attribute;
+	}
+
+	/**
+	 * @param string $attribute
+	 *
+	 * @return $this
+	 */
+	public function setAttribute( $attribute ) {
+		$this->attribute = $attribute;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getValue() {
+		return $this->_value;
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return $this
+	 */
+	public function setValue( $value ) {
+		$this->_value = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getField() {
+		return $this->_field;
+	}
+
+	/**
+	 * @param string $field
+	 *
+	 * @return $this
+	 */
+	public function setField( $field ) {
+		$this->_field = $field;
+
+		return $this;
+	}
 
 	/**
 	 * Get default attribute values
