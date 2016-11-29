@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <{{ moduleName | lower }} translate="title" module="{{ moduleName | lower }}">
+                                        <title>{{ vendorNamespace | capitalize }} {{ moduleName | capitalize }}</title>
+                                    </{{ moduleName | lower }}>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
