@@ -37,7 +37,8 @@ class Factory
 
         if (!class_exists($class)) {
             throw new RuntimeException(
-            	'No script generator for this entity type available (The script is looking for ' . $class . ')'
+            	'No script generator for this entity type available (The script is looking for ' . $class . '). '
+	                . 'Acceptable values are catalog_category, catalog_product, customer.'
             );
         }
 
