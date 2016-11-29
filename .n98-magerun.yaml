@@ -2,7 +2,7 @@
 
 autoloaders:
   # Namespace => path to your libs
-  sfrost2004: /Users/simonfrost/PhpStormProjects/sfrost2004/src
+  sfrost2004: /Users/simonfrost/PhpStormProjects/magerun/src
 
 twig:
   baseDirs:
