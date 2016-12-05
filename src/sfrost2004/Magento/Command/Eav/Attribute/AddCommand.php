@@ -6,7 +6,7 @@
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact Zone8 for more information.
+ * needs please contact sfrost2004 for more information.
  *
  * @category    sfrost2004
  * @package     sfrost2004
@@ -29,8 +29,9 @@ class AddCommand extends AbstractMagentoCommand
 	{
 		$this
 			->setName('eav:attribute:add')
-			->addArgument('entityType', InputArgument::REQUIRED, 'Entity Type Code like catalog_product')
-			->addArgument('attributeCode', InputArgument::REQUIRED, 'Attribute Code')
+			->addArgument('entityType', InputArgument::REQUIRED, 'Entity type code like catalog_product')
+			->addArgument('attributeCode', InputArgument::REQUIRED, 'Attribute code')
+			->addArgument('frontendInput', InputArgument::OPTIONAL, 'Frontend input type (text, dropdown, multiselect, etc)')
 			->setDescription('Creates resource script to add a new attribute to EAV entity [sfrost2004]');
 	}
 
@@ -48,10 +49,11 @@ class AddCommand extends AbstractMagentoCommand
 		}
 
 		try {
-			$entityType = $input->getArgument('entityType');
-			$attributeCode = $input->getArgument('attributeCode');
+			$entityType     = $input->getArgument('entityType');
+			$attributeCode  = $input->getArgument('attributeCode');
+			$frontendInput  = $input->getArgument('frontendInput');
 
-			$generator = EntityType\Factory::create($entityType, $attributeCode);
+			$generator = EntityType\Factory::create( $entityType, $attributeCode, $frontendInput);
 			$code = $generator->generateCode();
 			$warnings = $generator->getWarnings();
 

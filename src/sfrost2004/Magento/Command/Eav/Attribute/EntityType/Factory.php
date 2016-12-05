@@ -6,7 +6,7 @@
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact Zone8 for more information.
+ * needs please contact sfrost2004 for more information.
  *
  * @category    sfrost2004
  * @package     sfrost2004
@@ -21,13 +21,15 @@ use RuntimeException;
 
 class Factory
 {
-    /**
-     * @param string $entityType
-     * @param string $attributeCode
-     *
-     * @return mixed
-     */
-    public static function create($entityType, $attributeCode)
+	/**
+	 * @param string $entityType
+	 * @param string $attributeCode
+	 *
+	 * @param        $frontendInput
+	 *
+	 * @return mixed
+	 */
+    public static function create( $entityType, $attributeCode, $frontendInput = 'text')
     {
         $words = explode('_', strtolower($entityType));
         $class = __NAMESPACE__ . '\\';
@@ -42,6 +44,6 @@ class Factory
             );
         }
 
-        return new $class($attributeCode);
+        return new $class($attributeCode, $frontendInput);
     }
 }
