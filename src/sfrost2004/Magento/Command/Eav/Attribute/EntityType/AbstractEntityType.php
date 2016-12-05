@@ -6,7 +6,7 @@
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact Zone8 for more information.
+ * needs please contact sfrost2004 for more information.
  *
  * @category    sfrost2004
  * @package     sfrost2004
@@ -34,6 +34,11 @@ abstract class AbstractEntityType implements EntityType
      */
     protected $attribute;
 
+	/**
+	 * @var string
+	 */
+    protected $frontendInput;
+
     /**
      * @var string
      */
@@ -44,12 +49,14 @@ abstract class AbstractEntityType implements EntityType
      */
     protected $warnings = array();
 
-    /**
-     * @param string $attributeCode
-     */
-    public function __construct($attributeCode)
+	/**
+	 * @param string $attributeCode
+	 * @param string $frontendInput
+	 */
+    public function __construct($attributeCode, $frontendInput)
     {
         $this->attribute = $attributeCode;
+        $this->frontendInput = $frontendInput;
     }
 
     /**

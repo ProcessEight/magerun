@@ -6,7 +6,7 @@
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact Zone8 for more information.
+ * needs please contact sfrost2004 for more information.
  *
  * @category    sfrost2004
  * @package     sfrost2004
@@ -79,12 +79,61 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 			'is_filterable_in_search'       => 0,
 			'used_in_product_listing'       => 0,
 			'used_for_sort_by'              => 0,
-			'apply_to'                      => 'simple',
+			'apply_to'                      => NULL,
 			'position'                      => 999,
 			'is_configurable'               => 0,
 			'is_used_for_promo_rules'       => 0,
 			'group'                         => 'General',
 		));
+
+		// Merge in specific values for different frontend_input types
+		$data = array_merge($data, $this->_getFrontendInputSpecificDefaultValues());
+
+		return $data;
+	}
+
+	/**
+	 * Return default values for different frontend_input types
+	 *
+	 * @return array
+	 */
+	protected function _getFrontendInputSpecificDefaultValues()
+	{
+		switch ($this->frontendInput) {
+			case 'multiselect':
+				$data = $this->_getMultiselectDefaultValues();
+				break;
+
+			default:
+				$data = [];
+				break;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Default values for attributes with frontend_input of multiselect
+	 *
+	 * @return array
+	 */
+	protected function _getMultiselectDefaultValues()
+	{
+		$data = [
+			'backend'   => 'eav/entity_attribute_backend_array',
+		    'type'      => 'text',
+		    'input'     => 'multiselect',
+//		    'default'   => '<Attribute Option ID>',
+			'option' =>
+				array (
+					'values' =>
+						array (
+							'<Sort Order>' => '<Admin Store Label>',
+						),
+				),
+
+		];
+
 		return $data;
 	}
 
@@ -134,7 +183,8 @@ class CatalogProduct extends AbstractEntityType implements EntityType
 \$setup = new Mage_Catalog_Model_Resource_Setup('core_setup');
 
 /* 
- *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped'
+ *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped' 
+ *  or omit it to apply to all product types
  */
 \$data = $arrayCode;
 \$setup->addAttribute('catalog_product', '" . $this->attribute . "', \$data);
@@ -147,6 +197,7 @@ class CatalogProduct extends AbstractEntityType implements EntityType
  */
 // \$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', '" . $this->attribute . "');
 // \$attribute->setStoreLabels(array (
+//      '<store_id>' => 'Label',
 // ));
 // \$attribute->save();
 ";
