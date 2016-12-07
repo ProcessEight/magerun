@@ -332,6 +332,9 @@ class BetterCommand extends AbstractMagentoCommand
         $output->writeln('<info>Created file: <comment>' . $outFile . '<comment></info>');
     }
 
+	/**
+	 * @param OutputInterface $output
+	 */
     protected function addAdditionalFiles(OutputInterface $output)
     {
         $config = $this->getCommandConfig();
@@ -356,11 +359,11 @@ class BetterCommand extends AbstractMagentoCommand
      */
     private function _getOutfile($filename)
     {
-        $pathes = array(
+        $paths = array(
             'rootDir'   => $this->_magentoRootFolder,
             'moduleDir' => $this->moduleDirectory,
         );
 
-        return $this->getHelper('twig')->renderString($filename, array_merge($this->twigVars, $pathes));
+        return $this->getHelper('twig')->renderString($filename, array_merge($this->twigVars, $paths));
     }
 }
