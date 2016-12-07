@@ -14,9 +14,11 @@ commands:
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
     - sfrost2004\Magento\Command\Developer\Toggle\ShippingMethodCommand
 
-  # optional command config
-  #MyCommandNamespace\FooCommand:
-  #  foo: bar
+  sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand:
+    additionalFiles:
+      "dev/module/create/app/Helper/Data.twig": "{{moduleDir}}/Helper/Data.php"
+      "dev/module/create/app/data/data-install-0.1.0.twig": "{{moduleDir}}/data/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/data-install-0.1.0.php"
+      "dev/module/create/app/sql/install-0.1.0.twig": "{{moduleDir}}/sql/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/install-0.1.0.php"
 
   N98\Magento\Command\Installer\InstallCommand:
     magento-packages:
