@@ -2,15 +2,17 @@
 
 autoloaders:
   # Namespace => path to your libs
-  sfrost2004: /Users/simonfrost/PhpStormProjects/sfrost2004/src
+  sfrost2004: /Users/simonfrost/PhpStormProjects/magerun/src
 
 commands:
   customCommands:
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
 
-  # optional command config
-  #MyCommandNamespace\FooCommand:
-  #  foo: bar
+  sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand:
+    additionalFiles:
+      "dev/module/create/app/Helper/Data.twig": "{{moduleDir}}/Helper/Data.php"
+      "dev/module/create/app/data/data-install-0.1.0.twig": "{{moduleDir}}/data/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/data-install-0.1.0.php"
+      "dev/module/create/app/sql/install-0.1.0.twig": "{{moduleDir}}/sql/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/install-0.1.0.php"
 
 twig:
   baseDirs:
