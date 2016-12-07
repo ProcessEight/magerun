@@ -12,6 +12,7 @@ commands:
   customCommands:
     - sfrost2004\Magento\Command\Eav\Attribute\AddCommand
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
+    - sfrost2004\Magento\Command\Developer\Toggle\ShippingMethodCommand
 
   # optional command config
   #MyCommandNamespace\FooCommand:
