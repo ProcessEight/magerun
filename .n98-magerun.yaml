@@ -13,6 +13,7 @@ commands:
     - sfrost2004\Magento\Command\Eav\Attribute\AddCommand
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
     - sfrost2004\Magento\Command\Developer\Toggle\ShippingMethodCommand
+    - sfrost2004\Magento\Command\System\Admin\Login\CheckCommand
 
   sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand:
     additionalFiles:
