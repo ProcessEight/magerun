@@ -11,8 +11,25 @@ twig:
 commands:
   customCommands:
     - sfrost2004\Magento\Command\Eav\Attribute\AddCommand
+    - sfrost2004\Magento\Command\Developer\Environment\SetCommand
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
     - sfrost2004\Magento\Command\Developer\Toggle\ShippingMethodCommand
+
+  sfrost2004\Magento\Command\Developer\Environment\SetCommand:
+    environments:
+      localhost:
+        config:
+          default:
+            0:
+              "general/country/default": "GB"
+      dev:
+        config:
+          websites:
+            1:
+              "general/country/default": "FR"
+          stores:
+            3:
+              "general/country/default": "DE"
 
   sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand:
     additionalFiles:
