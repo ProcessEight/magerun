@@ -18,7 +18,7 @@ class SetCommand extends AbstractMagentoCommand
 	{
 		$this
 			->setName('dev:env:set')
-			->addArgument('env', InputArgument::REQUIRED, 'An environment to configure.')
+			->addArgument('env', InputArgument::OPTIONAL, 'An environment to configure.')
 			->setDescription('Modifies a Magento installation according to pre-set values []');
 
 		$help = <<<HELP
@@ -49,7 +49,7 @@ HELP;
 //		$this->disableObservers();
 		$environment = $input->getArgument('env');
 		if ($environment === null) {
-			$this->writeSection($output, 'Shipping Methods');
+			$this->writeSection($output, 'Available environments');
 			$environmentList = $this->getEnvironmentsList();
 			$question = array();
 			foreach ($environmentList as $key => $environment) {
@@ -86,6 +86,9 @@ HELP;
 
 			$configSettings = $this->getEnvironmentConfig($environment);
 
+			// ensure that n98-magerun doesn't stop after first command
+			$this->getApplication()->setAutoExit(false);
+
 			foreach ( $configSettings as $configScopeCode => $configScopes) {
 
 				foreach ( $configScopes as $configScopeId => $configOptions ) {
@@ -94,28 +97,27 @@ HELP;
 					 * Use existing config:set command
 					 */
 
-					// ensure that n98-magerun doesn't stop after first command
-					$this->getApplication()->setAutoExit(false);
+					foreach ( $configOptions as $configPath => $configValue ) {
 
-					$commandOptions = " --scope {$configScopeCode} ";
-					$commandOptions .= " --scope-id {$configScopeId} ";
-					$commandOptions .= key($configOptions) . " ";
-					$commandOptions .= current($configOptions);
+						$commandOptions = " --scope {$configScopeCode} ";
+						$commandOptions .= " --scope-id {$configScopeId} ";
+						$commandOptions .= $configPath . " ";
+						$commandOptions .= $configValue;
 
-					$input = new StringInput("config:set {$commandOptions}");
-		//			$input = new StringInput('config:set --scope websites --scope-id 2 carriers/flatrate/active 0');
+						$input = new StringInput("config:set {$commandOptions}");
+			//			$input = new StringInput('config:set --scope websites --scope-id 2 carriers/flatrate/active 0');
 
-					// with output
-					$this->getApplication()->run($input, $output);
-
+						// with output
+						$this->getApplication()->run($input, $output);
+					}
 				}
 			}
 
 			// Clear config cache
-			$input = new StringInput('cache:clean config');
+//			$input = new StringInput('cache:clean config');
 
 			// Execute command without output
-			$this->getApplication()->run($input, new NullOutput());
+//			$this->getApplication()->run($input, new NullOutput());
 
 			// reactivate auto-exit
 			$this->getApplication()->setAutoExit(true);
