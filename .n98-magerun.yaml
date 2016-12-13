@@ -21,15 +21,55 @@ commands:
         config:
           default:
             0:
-              "general/country/default": "GB"
+              general/country/default: GB
+              general/store_information/merchant_country: FR
+              design/head/demonotice: 1
+              trans_email/ident_general/email: simon@example.com
+              trans_email/ident_sales/email: simon@example.com
+              trans_email/ident_support/email: simon@example.com
+              trans_email/ident_custom1/email: simon@example.com
+              trans_email/ident_custom2/email: simon@example.com
+              contacts/email/recipient_email: simon@example.com
+              sitemap/generate/error_email: simon@example.com
+              customer/password/require_admin_user_to_change_user_password: 0
+              tax/defaults/country: GB
+              tax/defaults/postcode: "YO24 1BF"
+              shipping/origin/country_id: GB
+              shipping/origin/region_id: North Yorkshire
+              shipping/origin/postcode: "YO24 1BF"
+#              Shipping methods:
+              carriers/dhlint/active: 0
+              carriers/dhl/active: 0
+              carriers/fedex/active: 0
+              carriers/usps/active: 0
+              carriers/ups/active: 0
+              google/analytics/account: UA-123456-AB
+              payment/account/merchant_country: GB
+              # PayPal Express Checkout:
+#              payment/express_checkout_required_express_checkout/business_account
+#              payment/express_checkout_required_express_checkout/api_authentication
+#              payment/express_checkout_required_express_checkout/api_username
+#              payment/express_checkout_required_express_checkout/api_password
+#              payment/express_checkout_required_express_checkout/api_signature
+#              payment/express_checkout_required_express_checkout/sandbox_flag
+#              payment/express_checkout_required/enable_express_checkout: 0
+              payment/settings_ec/payment_action: Sale
+              payment/settings_ec_advanced/debug: 1
+#              Other payment methods:
+              payment/checkmo/active: 1
+              payment/checkmo/specificcountry: GB,DE
+              admin/security/extensions_compatibility_mode: Disabled
+              system/smtp/disable: 1
+              dev/log/active: 1
+              dev/restrict/allow_ips: 127.0.0.1
       dev:
         config:
           websites:
             1:
-              "general/country/default": "FR"
+              general/country/default: FR
           stores:
             3:
-              "general/country/default": "DE"
+              general/country/default: DE
 
   sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand:
     additionalFiles:

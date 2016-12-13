@@ -102,7 +102,7 @@ HELP;
 						$commandOptions = " --scope {$configScopeCode} ";
 						$commandOptions .= " --scope-id {$configScopeId} ";
 						$commandOptions .= $configPath . " ";
-						$commandOptions .= $configValue;
+						$commandOptions .= '"' . $configValue . '"';
 
 						$input = new StringInput("config:set {$commandOptions}");
 			//			$input = new StringInput('config:set --scope websites --scope-id 2 carriers/flatrate/active 0');
