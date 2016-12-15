@@ -11,6 +11,7 @@ twig:
 commands:
   customCommands:
     - sfrost2004\Magento\Command\Eav\Attribute\AddCommand
+    - sfrost2004\Magento\Command\Developer\EmailTemplate\PreviewCommand
     - sfrost2004\Magento\Command\Developer\Environment\SetCommand
     - sfrost2004\Magento\Command\Developer\Module\Create\BetterCommand
     - sfrost2004\Magento\Command\Developer\Toggle\ShippingMethodCommand
