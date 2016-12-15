@@ -10,15 +10,27 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Input\InputOption;
 use N98\Magento\Command\AbstractMagentoCommand;
 
 class PreviewCommand extends AbstractMagentoCommand
 {
+	protected $_appEmulation;
+
+	protected $_initialEnvironmentInfo;
+
 	protected function configure()
 	{
 		$this
 			->setName('dev:email-template:preview')
 			->addArgument('template-code', InputArgument::OPTIONAL, 'An email template to preview.')
+			->addOption(
+				'output',
+				null,
+				InputOption::VALUE_OPTIONAL,
+				'Output method (stdout, log, browser)',
+				'stdout'
+			)
 			->setDescription('Generates a preview of a transactional email template [sfrost2004]');
 
 		$help = <<<HELP
@@ -82,6 +94,100 @@ HELP;
 			});
 		}
 
+		try {
+
+			// Ask for email template variables
+			$variables = $this->_getTransactionalEmailTemplateVariables($output, $templateCode);
+
+			// Start store emulation
+			$this->_startStoreEmulation($variables['store_id']);
+
+			// Prepare template variables
+			$variables = $this->_prepareTemplateVariables($variables);
+
+			// Generate preview
+			$processedTemplate = $this->_generatePreview($templateCode, $variables);
+
+			// Refactor to method eventually
+			if($input->getOption('output') == 'log') {
+				\Mage::log($processedTemplate, \Zend_Log::DEBUG, 'email.log', true);
+
+				$message = '<info>Wrote to log file ';
+				$message .= \Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . 'email.log';
+				$message .= '</info>';
+
+				$output->writeln($message);
+
+			} elseif($input->getOption('output') == 'browser') {
+
+				$output->writeln('<info>Output mode is not supported (yet)</info>');
+				$output->writeln($processedTemplate);
+			} else {
+				$output->writeln($processedTemplate);
+			}
+
+			// Stop store emulation
+			$this->_stopStoreEmulation();
+
+		} catch (Exception $e) {
+			$output->writeln('<error>' . $e->getMessage() . '</error>');
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function _getTransactionalEmailTemplatesList()
+	{
+		$templateCodes = [];
+		$templates = \Mage::app()->getConfig()->getNode('default/carriers');
+		foreach ($templates->children() as $template) {
+			/** @var \Mage_Core_Model_Config_Element $template */
+			$templateCodes[] = array(
+				'code'   => $template->getName(),
+				'title'  => (string)$template->title,
+			);
+		}
+
+		return $templateCodes;
+	}
+
+	/**
+	 * Start store emulation process
+	 *
+	 * @param int $storeId
+	 *
+	 * @return Varien_Object information about environment of the initial store
+	 */
+	protected function _startStoreEmulation($storeId) {
+
+		$appEmulation = \Mage::getSingleton('core/app_emulation');
+		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+
+		$this->_appEmulation            = $appEmulation;
+		$this->_initialEnvironmentInfo  = $initialEnvironmentInfo;
+	}
+
+	/**
+	 * Stop enviromment emulation
+	 *
+	 * Function restores initial store environment
+	 *
+	 * @internal Varien_Object $initialEnvironmentInfo information about environment of the initial store
+	 */
+	protected function _stopStoreEmulation() {
+
+		$this->_appEmulation->stopEnvironmentEmulation($this->_initialEnvironmentInfo);
+	}
+
+	/**
+	 * @param OutputInterface $output
+	 * @param                 $templateCode
+	 *
+	 * @return array
+	 */
+	protected function _getTransactionalEmailTemplateVariables(OutputInterface $output, $templateCode) {
+
 		if($templateCode == 1) {
 			// Get Order Increment ID
 			/** @var DialogHelper $dialog */
@@ -134,33 +240,48 @@ HELP;
 
 		}
 
-		try {
-
-			$processedTemplate = $this->_generatePreview($templateCode, $variables);
-
-			$output->writeln($processedTemplate);
-
-		} catch (Exception $e) {
-			$output->writeln('<error>' . $e->getMessage() . '</error>');
-		}
+		return $variables;
 	}
 
 	/**
-	 * @param OutputInterface $output
+	 * @param array $variables
+	 *
+	 * @return array
+	 * @throws Exception
 	 */
-	protected function _getTransactionalEmailTemplatesList()
-	{
-		$templateCodes = [];
-		$templates = \Mage::app()->getConfig()->getNode('default/carriers');
-		foreach ($templates->children() as $template) {
-			/** @var \Mage_Core_Model_Config_Element $template */
-			$templateCodes[] = array(
-				'code'   => $template->getName(),
-				'title'  => (string)$template->title,
-			);
+	protected function _prepareTemplateVariables(array $variables) {
+
+		$store   = \Mage::app()->getStore($variables['store_id']);
+		if(!empty($variables['order_increment_id'])) {
+			$order              = \Mage::getModel('sales/order')->loadByIncrementId($variables['order_increment_id']);
+			$billing            = $order->getBillingAddress();
+
+			try {
+				// Retrieve specified view block from appropriate design package (depends on emulated store)
+				$paymentBlock = \Mage::helper('payment')->getInfoBlock($order->getPayment())->setIsSecureMode(true);
+				$paymentBlock->getMethod()->setStore($store->getId());
+				$paymentBlockHtml = $paymentBlock->toHtml();
+			} catch (Exception $exception) {
+				// Stop store emulation process
+				$this->_appEmulation->stopEnvironmentEmulation($this->_initialEnvironmentInfo);
+				throw $exception;
+			}
+		} else {
+			$order              = '';
+			$billing            = '';
+			$paymentBlockHtml   = '';
 		}
 
-		return $templateCodes;
+		$variables = [
+			'order'         => $order,
+			'billing'       => $billing,
+			'payment_html'  => $paymentBlockHtml,
+			'store'         => $store,
+			'email'         => $variables['email'],
+			'name'          => $variables['name'],
+		];
+
+		return $variables;
 	}
 
 	/**
@@ -171,12 +292,6 @@ HELP;
 	protected function _generatePreview($templateCode, $variables) {
 
 		$templateCode = 1;
-
-		// Start store emulation process
-		// Since the Transactional Email preview process has no mechanism for selecting a store view to use for
-		// previewing, use the default store view
-		$appEmulation = \Mage::getSingleton('core/app_emulation');
-		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($variables['store_id']);
 
 		/** @var $template Mage_Core_Model_Email_Template */
 		$template = \Mage::getModel('core/email_template');
@@ -194,45 +309,13 @@ HELP;
 			$filter->filter($template->getTemplateText())
 		);
 
-		$store   = \Mage::app()->getStore($variables['store_id']);
-		if(!empty($variables['order_increment_id'])) {
-			$order              = \Mage::getModel('sales/order')->loadByIncrementId($variables['order_increment_id']);
-			$billing            = $order->getBillingAddress();
-
-			try {
-				// Retrieve specified view block from appropriate design package (depends on emulated store)
-				$paymentBlock = \Mage::helper('payment')->getInfoBlock($order->getPayment())->setIsSecureMode(true);
-				$paymentBlock->getMethod()->setStore($store->getId());
-				$paymentBlockHtml = $paymentBlock->toHtml();
-			} catch (Exception $exception) {
-				// Stop store emulation process
-				$appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
-				throw $exception;
-			}
-		} else {
-			$order              = '';
-			$billing            = '';
-			$paymentBlockHtml   = '';
-		}
-
-		$variables = [
-			'order'         => $order,
-			'billing'       => $billing,
-			'payment_html'  => $paymentBlockHtml,
-			'store'         => $store,
-			'email'         => $variables['email'],
-			'name'          => $variables['name'],
-			'this'          => $template,
-		];
+		$variables['this'] = $template;
 
 		$templateProcessed = $template->getProcessedTemplate($variables, true);
 
 		if ($template->isPlain()) {
 			$templateProcessed = "<pre>" . htmlspecialchars($templateProcessed) . "</pre>";
 		}
-
-		// Stop store emulation process
-		$appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
 		return $templateProcessed;
 	}
