@@ -22,9 +22,15 @@ class PreviewCommand extends AbstractMagentoCommand
 			->setDescription('Generates a preview of a transactional email template [sfrost2004]');
 
 		$help = <<<HELP
-   $ n98-magerun.phar dev:email:template:preview
 
 Generates a preview of a transactional email template [sfrost2004]
+   
+$ n98-magerun.phar dev:email-template:preview [OPTIONS]
+
+OPTIONS
+
+template-code   Transactional email template code
+
 
 HELP;
 		$this->setHelp($help);
@@ -50,7 +56,7 @@ HELP;
 		$templateCode = $input->getArgument('template-code');
 		if ($templateCode === null) {
 			$this->writeSection($output, 'Available transactional email templates');
-			$emailTemplatesList = $this->getTransactionalEmailTemplatesList();
+			$emailTemplatesList = $this->_getTransactionalEmailTemplatesList();
 			$question = array();
 			foreach ($emailTemplatesList as $key => $templateCode) {
 				$question[] = '<comment>' . str_pad('[' . ($key + 1) . ']', 4, ' ', STR_PAD_RIGHT) . '</comment> ' .
@@ -78,7 +84,9 @@ HELP;
 
 		try {
 
+			$processedTemplate = $this->_generatePreview($templateCode);
 
+			$output->writeln($processedTemplate);
 
 		} catch (Exception $e) {
 			$output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -88,7 +96,7 @@ HELP;
 	/**
 	 * @param OutputInterface $output
 	 */
-	protected function getTransactionalEmailTemplatesList()
+	protected function _getTransactionalEmailTemplatesList()
 	{
 		$templateCodes = [];
 		$templates = \Mage::app()->getConfig()->getNode('default/carriers');
@@ -103,4 +111,51 @@ HELP;
 		return $templateCodes;
 	}
 
+	/**
+	 * Generate preview of email template
+	 *
+	 * @return string
+	 */
+	protected function _generatePreview($templateCode) {
+
+		$templateCode = 1;
+
+		// Start store emulation process
+		// Since the Transactional Email preview process has no mechanism for selecting a store view to use for
+		// previewing, use the default store view
+		$defaultStoreId = \Mage::app()->getDefaultStoreView()->getId();
+		$appEmulation = \Mage::getSingleton('core/app_emulation');
+		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($defaultStoreId);
+
+		/** @var $template Mage_Core_Model_Email_Template */
+		$template = \Mage::getModel('core/email_template');
+		$id = $templateCode;
+		if ($id) {
+			$template->load($id);
+		} else {
+			$template->setTemplateType($this->getRequest()->getParam('type'));
+			$template->setTemplateText($this->getRequest()->getParam('text'));
+			$template->setTemplateStyles($this->getRequest()->getParam('styles'));
+		}
+
+		/* @var $filter Mage_Core_Model_Input_Filter_MaliciousCode */
+		$filter = \Mage::getSingleton('core/input_filter_maliciousCode');
+
+		$template->setTemplateText(
+			$filter->filter($template->getTemplateText())
+		);
+
+		$vars = array();
+
+		$templateProcessed = $template->getProcessedTemplate($vars, true);
+
+		if ($template->isPlain()) {
+			$templateProcessed = "<pre>" . htmlspecialchars($templateProcessed) . "</pre>";
+		}
+
+		// Stop store emulation process
+		$appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+
+		return $templateProcessed;
+	}
 }
