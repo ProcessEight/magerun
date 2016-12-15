@@ -82,9 +82,61 @@ HELP;
 			});
 		}
 
+		if($templateCode == 1) {
+			// Get Order Increment ID
+			/** @var DialogHelper $dialog */
+			$dialog = $this->getHelper('dialog');
+			$orderIncrementId = $dialog->ask(
+				$output,
+				'<question>Order Increment ID:</question>: '
+			);
+
+			if (empty($orderIncrementId)) {
+				$orderIncrementId = '';
+			}
+
+			// Get Store ID
+			$storeId = $dialog->ask(
+				$output,
+				'<question>Store ID (1):</question>: '
+			);
+
+			if (empty($storeId)) {
+				$storeId = 1;
+			}
+
+			// Get Email
+			$email = $dialog->ask(
+				$output,
+				'<question>Customer Email (customer@example.com):</question>: '
+			);
+
+			if (empty($email)) {
+				$email = 'customer@example.com';
+			}
+
+			// Get Name
+			$name = $dialog->ask(
+				$output,
+				'<question>Customer Name (John Smith):</question>: '
+			);
+
+			if (empty($name)) {
+				$name = 'John Smith';
+			}
+
+			$variables = [
+				'order_increment_id'    => $orderIncrementId,
+				'store_id'              => $storeId,
+				'email'                 => $email,
+				'name'                  => $name,
+			];
+
+		}
+
 		try {
 
-			$processedTemplate = $this->_generatePreview($templateCode);
+			$processedTemplate = $this->_generatePreview($templateCode, $variables);
 
 			$output->writeln($processedTemplate);
 
@@ -116,16 +168,15 @@ HELP;
 	 *
 	 * @return string
 	 */
-	protected function _generatePreview($templateCode) {
+	protected function _generatePreview($templateCode, $variables) {
 
 		$templateCode = 1;
 
 		// Start store emulation process
 		// Since the Transactional Email preview process has no mechanism for selecting a store view to use for
 		// previewing, use the default store view
-		$defaultStoreId = \Mage::app()->getDefaultStoreView()->getId();
 		$appEmulation = \Mage::getSingleton('core/app_emulation');
-		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($defaultStoreId);
+		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($variables['store_id']);
 
 		/** @var $template Mage_Core_Model_Email_Template */
 		$template = \Mage::getModel('core/email_template');
@@ -133,9 +184,7 @@ HELP;
 		if ($id) {
 			$template->load($id);
 		} else {
-			$template->setTemplateType($this->getRequest()->getParam('type'));
-			$template->setTemplateText($this->getRequest()->getParam('text'));
-			$template->setTemplateStyles($this->getRequest()->getParam('styles'));
+			throw new Exception('Could not load template for template code ' . $templateCode);
 		}
 
 		/* @var $filter Mage_Core_Model_Input_Filter_MaliciousCode */
@@ -145,9 +194,38 @@ HELP;
 			$filter->filter($template->getTemplateText())
 		);
 
-		$vars = array();
+		$store   = \Mage::app()->getStore($variables['store_id']);
+		if(!empty($variables['order_increment_id'])) {
+			$order              = \Mage::getModel('sales/order')->loadByIncrementId($variables['order_increment_id']);
+			$billing            = $order->getBillingAddress();
 
-		$templateProcessed = $template->getProcessedTemplate($vars, true);
+			try {
+				// Retrieve specified view block from appropriate design package (depends on emulated store)
+				$paymentBlock = \Mage::helper('payment')->getInfoBlock($order->getPayment())->setIsSecureMode(true);
+				$paymentBlock->getMethod()->setStore($store->getId());
+				$paymentBlockHtml = $paymentBlock->toHtml();
+			} catch (Exception $exception) {
+				// Stop store emulation process
+				$appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+				throw $exception;
+			}
+		} else {
+			$order              = '';
+			$billing            = '';
+			$paymentBlockHtml   = '';
+		}
+
+		$variables = [
+			'order'         => $order,
+			'billing'       => $billing,
+			'payment_html'  => $paymentBlockHtml,
+			'store'         => $store,
+			'email'         => $variables['email'],
+			'name'          => $variables['name'],
+			'this'          => $template,
+		];
+
+		$templateProcessed = $template->getProcessedTemplate($variables, true);
 
 		if ($template->isPlain()) {
 			$templateProcessed = "<pre>" . htmlspecialchars($templateProcessed) . "</pre>";
