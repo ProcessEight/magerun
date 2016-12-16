@@ -19,12 +19,12 @@ class SetCommand extends AbstractMagentoCommand
 		$this
 			->setName('dev:env:set')
 			->addArgument('env', InputArgument::OPTIONAL, 'An environment to configure.')
-			->setDescription('Modifies a Magento installation according to pre-set values []');
+			->setDescription('Modifies a Magento installation according to pre-set values [sfrost2004]');
 
 		$help = <<<HELP
    $ n98-magerun.phar dev:env:set [env]
 
-Updates the config in the default scope only (at the moment).
+Updates the config
 
 HELP;
 		$this->setHelp($help);

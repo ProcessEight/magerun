@@ -1,2 +1,114 @@
 # magerun
 Extra commands for n98-magerun
+
+## Installation
+
+1. Clone with GitHub
+2. Update your n98-magerun.yaml to add the following:
+
+```yaml
+autoloaders:
+  # Namespace => path to your libs
+  sfrost2004: /Users/simonfrost/PhpStormProjects/magerun/src
+
+commands:
+  customCommands:
+    - sfrost2004\Magento\Command\Developer\Environment\SetCommand
+    # ...etc
+```
+
+## Commands
+
+### dev:env:set
+Update a Magento environment to use the specified settings. Run this command after setting up a new Magento 1.x instance to set default config values.
+
+#### Usage
+
+```bash
+$ n98-magerun.phar dev:env:set --help
+
+Usage:
+  dev:env:set [<env>]
+
+Arguments:
+  env                        An environment to configure.
+```
+
+#### Examples
+
+```bash
+# Updates the Magento environment to the settings specified in the 'localhost' key in the YAML
+$ n98-magerun.phar dev:env:set localhost
+
+# Choose an environemtn to update from those in the n98-magerun.yaml
+$ n98-magerun.phar dev:env:set
+```
+
+Configuration scopes and values are set in the n98-magerun.yaml file.
+
+If no environment code (e.g. 'localhost', 'dev') is specified on the command line, the command reads the YAML and allows the user to choose an environment.
+
+#### Configuration
+
+Add the following to your n98-magerun.yaml:
+
+```yaml
+commands:
+  customCommands:
+    - sfrost2004\Magento\Command\Developer\Environment\SetCommand
+
+  sfrost2004\Magento\Command\Developer\Environment\SetCommand:
+    environments:
+      localhost:    # Environment key
+        config:     
+          default:  # Configuration scope (default, websites, stores)
+            0:      # Configuration scope ID 
+              general/country/default: GB
+              general/store_information/merchant_country: FR
+              design/head/demonotice: 1
+              trans_email/ident_general/email: simon@example.com
+              trans_email/ident_sales/email: simon@example.com
+              trans_email/ident_support/email: simon@example.com
+              trans_email/ident_custom1/email: simon@example.com
+              trans_email/ident_custom2/email: simon@example.com
+              contacts/email/recipient_email: simon@example.com
+              sitemap/generate/error_email: simon@example.com
+              customer/password/require_admin_user_to_change_user_password: 0
+              tax/defaults/country: GB
+              tax/defaults/postcode: "YO24 1BF"
+              shipping/origin/country_id: GB
+              shipping/origin/region_id: North Yorkshire
+              shipping/origin/postcode: "YO24 1BF"
+#              Shipping methods:
+              carriers/dhlint/active: 0
+              carriers/dhl/active: 0
+              carriers/fedex/active: 0
+              carriers/usps/active: 0
+              carriers/ups/active: 0
+              google/analytics/account: UA-123456-AB
+              payment/account/merchant_country: GB
+              # PayPal Express Checkout:
+#              payment/express_checkout_required_express_checkout/business_account
+#              payment/express_checkout_required_express_checkout/api_authentication
+#              payment/express_checkout_required_express_checkout/api_username
+#              payment/express_checkout_required_express_checkout/api_password
+#              payment/express_checkout_required_express_checkout/api_signature
+#              payment/express_checkout_required_express_checkout/sandbox_flag
+#              payment/express_checkout_required/enable_express_checkout: 0
+              payment/settings_ec/payment_action: Sale
+              payment/settings_ec_advanced/debug: 1
+#              Other payment methods:
+              payment/checkmo/active: 1
+              payment/checkmo/specificcountry: GB,DE
+              admin/security/extensions_compatibility_mode: Disabled
+              system/smtp/disable: 1
+              dev/log/active: 1
+              dev/restrict/allow_ips: 127.0.0.1
+      dev:
+        config:
+          websites:
+            1:
+              general/country/default: FR
+          stores:
+            3:
+              general/country/default: DE
