@@ -2,8 +2,12 @@
 
 namespace sfrost2004\Magento\Command\Developer\EmailTemplate;
 
+use N98\Magento\Command\AbstractMagentoCommand;
+use N98\Util\Exec;
+use N98\Util\OperatingSystem;
 use Exception;
 use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Input\InputOption;
-use N98\Magento\Command\AbstractMagentoCommand;
 
 class PreviewCommand extends AbstractMagentoCommand
 {
@@ -188,8 +191,30 @@ HELP;
 
 			} elseif($input->getOption('output') == 'browser') {
 
-				$output->writeln('<info>Output mode is not supported (yet)</info>');
-				$output->writeln("SUBJECT: {$subject} \n\n{$processedTemplate}");
+				// Create new folder in media folder
+				$file = new \Varien_Io_File();
+				$emailPreviewFolderPath = \Mage::getBaseDir(\Mage_Core_Model_Store::URL_TYPE_MEDIA) .
+				                          DIRECTORY_SEPARATOR . 'email_preview' . DIRECTORY_SEPARATOR;
+				$emailPreviewFolderResult = $file->checkAndCreateFolder($emailPreviewFolderPath);
+
+				if (!$emailPreviewFolderResult) {
+					throw new RuntimeException("Could not create folder {$emailPreviewFolderPath}");
+				}
+
+				// Write to media folder, so browser can access it
+				$filename = 'email-' . date('Ymd-His') . '.html';
+				if (!$file->write($emailPreviewFolderPath . $filename, $processedTemplate)) {
+					throw new RuntimeException("Could not save email preview to {$emailPreviewFolderPath}{$filename}");
+				}
+
+				// Open email template in browser
+				$url = \Mage::getBaseUrl(\Mage_Core_Model_Store::URL_TYPE_MEDIA) .
+				       'email_preview' . DIRECTORY_SEPARATOR . $filename;
+
+				$output->writeln("<info>Opening {$url} in browser</info>");
+				$opener = $this->resolveOpenerCommand($output);
+				Exec::run(escapeshellcmd($opener . ' ' . $url));
+
 			} else {
 				$output->writeln("SUBJECT: {$subject} \n\n{$processedTemplate}");
 			}
@@ -278,30 +303,30 @@ HELP;
 			}
 
 			// Get Email
-			$email = $dialog->ask(
-				$output,
-				'<question>Customer Email (customer@example.com):</question>: '
-			);
-
-			if (empty($email)) {
-				$email = 'customer@example.com';
-			}
-
-			// Get Name
-			$name = $dialog->ask(
-				$output,
-				'<question>Customer Name (John Smith):</question>: '
-			);
-
-			if (empty($name)) {
-				$name = 'John Smith';
-			}
+//			$email = $dialog->ask(
+//				$output,
+//				'<question>Customer Email (customer@example.com):</question>: '
+//			);
+//
+//			if (empty($email)) {
+//				$email = 'customer@example.com';
+//			}
+//
+//			// Get Name
+//			$name = $dialog->ask(
+//				$output,
+//				'<question>Customer Name (John Smith):</question>: '
+//			);
+//
+//			if (empty($name)) {
+//				$name = 'John Smith';
+//			}
 
 			$variables = [
 				'order_increment_id'    => $orderIncrementId,
 				'store_id'              => $storeId,
-				'email'                 => $email,
-				'name'                  => $name,
+//				'email'                 => $email,
+//				'name'                  => $name,
 			];
 
 		}
@@ -384,5 +409,41 @@ HELP;
 		}
 
 		return $templateProcessed;
+	}
+
+	/**
+	 * @param OutputInterface $output
+	 * @return string
+	 */
+	private function resolveOpenerCommand(OutputInterface $output)
+	{
+		$opener = '';
+		if (OperatingSystem::isMacOs()) {
+			$opener = 'open';
+		} elseif (OperatingSystem::isWindows()) {
+			$opener = 'start';
+		} else {
+			// Linux
+			if (exec('which xdg-open')) {
+				$opener = 'xdg-open';
+			} elseif (exec('which gnome-open')) {
+				$opener = 'gnome-open';
+			} elseif (exec('which kde-open')) {
+				$opener = 'kde-open';
+			}
+		}
+
+		if (empty($opener)) {
+			throw new RuntimeException('No opener command like xdg-open, gnome-open, kde-open was found.');
+		}
+
+		if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
+			$message = sprintf('open command is "%s"', $opener);
+			$output->writeln(
+				'<debug>' . $message . '</debug>'
+			);
+		}
+
+		return $opener;
 	}
 }
