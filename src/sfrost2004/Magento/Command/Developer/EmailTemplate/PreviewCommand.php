@@ -105,15 +105,83 @@ HELP;
 			// Prepare template variables
 			$variables = $this->_prepareTemplateVariables($variables);
 
-			// Generate preview
-			$processedTemplate = $this->_generatePreview($templateCode, $variables);
+			if(!empty($variables['order'])) {
+				$order = $variables['order'];
+
+				// Retrieve corresponding email template id and customer name
+				if ($order->getCustomerIsGuest()) {
+					$templateId = \Mage::getStoreConfig(\Mage_Sales_Model_Order::XML_PATH_EMAIL_GUEST_TEMPLATE, $variables['store_id']);
+//					$customerName = $order->getBillingAddress()->getName();
+				} else {
+					$templateId = \Mage::getStoreConfig(\Mage_Sales_Model_Order::XML_PATH_EMAIL_TEMPLATE, $variables['store_id']);
+//					$customerName = $order->getCustomerName();
+				}
+			}
+
+
+			/** @var $mailer Mage_Core_Model_Email_Template_Mailer */
+			$mailer = \Mage::getModel('core/email_template_mailer');
+
+			// Set all required params and send emails
+			$mailer->setStoreId($variables['store_id']);
+			$mailer->setTemplateId($templateId);
+			$mailer->setTemplateParams(array(
+				'order'        => $order,
+				'billing'      => $variables['billing'],
+				'payment_html' => $variables['payment_html'],
+			));
+
+			/** @var $emailTemplate Mage_Core_Model_Email_Template */
+			$emailTemplate = \Mage::getModel('core/email_template');
+
+			// Set required design parameters
+			$emailTemplate->setDesignConfig(array(
+				'area' => 'frontend',
+				'store' => $variables['store_id'],
+			));
+
+			if (($variables['store_id'] === null) && $emailTemplate->getDesignConfig()->getStore()) {
+				$variables['store_id'] = $emailTemplate->getDesignConfig()->getStore();
+			}
+
+			if (is_numeric($templateId)) {
+				$emailTemplate->load($templateId);
+			} else {
+				$localeCode = \Mage::getStoreConfig('general/locale/code', $variables['store_id']);
+				$emailTemplate->loadDefault($templateId, $localeCode);
+			}
+
+			if (!$emailTemplate->getId()) {
+				throw \Mage::exception('Mage_Core', \Mage::helper('core')->__('Invalid transactional email code: %s', $templateId));
+			}
+
+			$emailTemplate->setUseAbsoluteLinks(true);
+			$processedTemplate = $emailTemplate->getProcessedTemplate($variables, true);
+			$subject = $emailTemplate->getProcessedTemplateSubject($variables);
+
+			// Stop store emulation
+			$this->_stopStoreEmulation();
 
 			// Refactor to method eventually
 			if($input->getOption('output') == 'log') {
-				\Mage::log($processedTemplate, \Zend_Log::DEBUG, 'email.log', true);
+
+				$filename = 'email-' . date('Ymd-His') . '.log';
+
+				\Mage::log("SUBJECT: {$subject} \n\n{$processedTemplate}", \Zend_Log::DEBUG, $filename, true);
 
 				$message = '<info>Wrote to log file ';
-				$message .= \Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . 'email.log';
+				$message .= \Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . $filename;
+				$message .= '</info>';
+
+				$output->writeln($message);
+
+			} elseif($input->getOption('output') == 'html') {
+
+				$filename = 'email-' . date('Ymd-His') . '.html';
+				\Mage::log("SUBJECT: {$subject} \n\n{$processedTemplate}", \Zend_Log::DEBUG, $filename, true);
+
+				$message = '<info>Wrote to HTML file ';
+				$message .= \Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . $filename;
 				$message .= '</info>';
 
 				$output->writeln($message);
@@ -121,13 +189,10 @@ HELP;
 			} elseif($input->getOption('output') == 'browser') {
 
 				$output->writeln('<info>Output mode is not supported (yet)</info>');
-				$output->writeln($processedTemplate);
+				$output->writeln("SUBJECT: {$subject} \n\n{$processedTemplate}");
 			} else {
-				$output->writeln($processedTemplate);
+				$output->writeln("SUBJECT: {$subject} \n\n{$processedTemplate}");
 			}
-
-			// Stop store emulation
-			$this->_stopStoreEmulation();
 
 		} catch (Exception $e) {
 			$output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -155,12 +220,13 @@ HELP;
 	/**
 	 * Start store emulation process
 	 *
-	 * @param int $storeId
+	 * @param int $variables['store_id']
 	 *
 	 * @return Varien_Object information about environment of the initial store
 	 */
 	protected function _startStoreEmulation($storeId) {
 
+		/** @var $appEmulation Mage_Core_Model_App_Emulation */
 		$appEmulation = \Mage::getSingleton('core/app_emulation');
 		$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
 
@@ -272,14 +338,14 @@ HELP;
 			$paymentBlockHtml   = '';
 		}
 
-		$variables = [
+		$variables = array_merge($variables, [
 			'order'         => $order,
 			'billing'       => $billing,
 			'payment_html'  => $paymentBlockHtml,
 			'store'         => $store,
-			'email'         => $variables['email'],
-			'name'          => $variables['name'],
-		];
+//			'email'         => $variables['email'],
+//			'name'          => $variables['name'],
+		]);
 
 		return $variables;
 	}
