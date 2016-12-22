@@ -40,7 +40,7 @@ Arguments:
 # Updates the Magento environment to the settings specified in the 'localhost' key in the YAML
 $ n98-magerun.phar dev:env:set localhost
 
-# Choose an environemtn to update from those in the n98-magerun.yaml
+# Choose an environment to update from those in the n98-magerun.yaml
 $ n98-magerun.phar dev:env:set
 ```
 
