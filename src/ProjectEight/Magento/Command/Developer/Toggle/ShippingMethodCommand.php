@@ -1,6 +1,6 @@
 <?php
 
-namespace sfrost2004\Magento\Command\Developer\Toggle;
+namespace ProjectEight\Magento\Command\Developer\Toggle;
 
 use Exception;
 use InvalidArgumentException;

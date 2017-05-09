@@ -1,21 +1,21 @@
 <?php
 /**
- * sfrost2004
+ * ProjectEight
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact sfrost2004 for more information.
+ * needs please contact ProjectEight for more information.
  *
- * @category    sfrost2004
- * @package     sfrost2004
- * @copyright   Copyright (c) 2016 sfrost2004
- * @author      Simon Frost, sfrost2004
+ * @category    ProjectEight
+ * @package     ProjectEight
+ * @copyright   Copyright (c) 2016 ProjectEight
+ * @author      Simon Frost, ProjectEight
  *
  */
 
-namespace sfrost2004\Magento\Command\Eav\Attribute;
+namespace ProjectEight\Magento\Command\Eav\Attribute;
 
 use N98\Magento\Command\AbstractMagentoCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,7 +32,7 @@ class AddCommand extends AbstractMagentoCommand
 			->addArgument('entityType', InputArgument::REQUIRED, 'Entity type code like catalog_product')
 			->addArgument('attributeCode', InputArgument::REQUIRED, 'Attribute code')
 			->addArgument('frontendInput', InputArgument::OPTIONAL, 'Frontend input type (text, dropdown, multiselect, etc)')
-			->setDescription('Creates resource script to add a new attribute to EAV entity [sfrost2004]');
+			->setDescription('Creates resource script to add a new attribute to EAV entity [ProjectEight]');
 	}
 
 	/**

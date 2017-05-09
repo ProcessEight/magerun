@@ -9,11 +9,11 @@ Extra commands for n98-magerun
 ```yaml
 autoloaders:
   # Namespace => path to your libs
-  sfrost2004: /Users/simonfrost/PhpStormProjects/magerun/src
+  ProjectEight: /Users/projecteight/PhpStormProjects/magerun/src
 
 commands:
   customCommands:
-    - sfrost2004\Magento\Command\Developer\Environment\SetCommand
+    - ProjectEight\Magento\Command\Developer\Environment\SetCommand
     # ...etc
 ```
 
@@ -46,7 +46,7 @@ $ n98-magerun.phar dev:env:set
 
 Configuration scopes and values are set in the n98-magerun.yaml file.
 
-If no environment code (e.g. 'localhost', 'dev') is specified on the command line, the command reads the YAML and allows the user to choose an environment.
+If no environment code (e.g. 'localhost', 'test', 'staging') is specified on the command line, the command reads the YAML and allows the user to choose an environment.
 
 #### Configuration
 
@@ -55,9 +55,9 @@ Add the following to your n98-magerun.yaml:
 ```yaml
 commands:
   customCommands:
-    - sfrost2004\Magento\Command\Developer\Environment\SetCommand
+    - ProjectEight\Magento\Command\Developer\Environment\SetCommand
 
-  sfrost2004\Magento\Command\Developer\Environment\SetCommand:
+  ProjectEight\Magento\Command\Developer\Environment\SetCommand:
     environments:
       localhost:    # Environment key
         config:     
@@ -66,13 +66,13 @@ commands:
               general/country/default: GB
               general/store_information/merchant_country: FR
               design/head/demonotice: 1
-              trans_email/ident_general/email: simon@example.com
-              trans_email/ident_sales/email: simon@example.com
-              trans_email/ident_support/email: simon@example.com
-              trans_email/ident_custom1/email: simon@example.com
-              trans_email/ident_custom2/email: simon@example.com
-              contacts/email/recipient_email: simon@example.com
-              sitemap/generate/error_email: simon@example.com
+              trans_email/ident_general/email: projecteight@example.com
+              trans_email/ident_sales/email: projecteight@example.com
+              trans_email/ident_support/email: projecteight@example.com
+              trans_email/ident_custom1/email: projecteight@example.com
+              trans_email/ident_custom2/email: projecteight@example.com
+              contacts/email/recipient_email: projecteight@example.com
+              sitemap/generate/error_email: projecteight@example.com
               customer/password/require_admin_user_to_change_user_password: 0
               tax/defaults/country: GB
               tax/defaults/postcode: "YO24 1BF"
@@ -104,7 +104,7 @@ commands:
               system/smtp/disable: 1
               dev/log/active: 1
               dev/restrict/allow_ips: 127.0.0.1
-      dev:
+      staging:
         config:
           websites:
             1:

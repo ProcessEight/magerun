@@ -1,6 +1,6 @@
 <?php
 
-namespace sfrost2004\Magento\Command\Developer\Toggle;
+namespace ProjectEight\Magento\Command\Developer\Toggle;
 
 use N98\Magento\Command\AbstractMagentoCommand;
 use N98\Util\DateTime as DateTimeUtils;

@@ -1,23 +1,23 @@
 <?php
 /**
- * sfrost2004
+ * ProjectEight
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact sfrost2004 for more information.
+ * needs please contact ProjectEight for more information.
  *
- * @category    sfrost2004
- * @package     sfrost2004
- * @copyright   Copyright (c) 2016 sfrost2004
- * @author      Simon Frost, sfrost2004
+ * @category    ProjectEight
+ * @package     ProjectEight
+ * @copyright   Copyright (c) 2016 ProjectEight
+ * @author      Simon Frost, ProjectEight
  *
  */
 
-namespace sfrost2004\Magento\Command\Eav\Attribute\EntityType;
+namespace ProjectEight\Magento\Command\Eav\Attribute\EntityType;
 
-class Customer extends AbstractEntityType implements EntityType
+class CatalogProduct extends AbstractEntityType implements EntityType
 {
     /**
      * Gets key legend for catalog product attribute
@@ -52,7 +52,6 @@ class Customer extends AbstractEntityType implements EntityType
             'is_unique'                     => 'unique',
             'note'                          => 'note',
             'group'                         => 'group',
-            'position'                      => 'position',
         );
     }
 
@@ -65,18 +64,76 @@ class Customer extends AbstractEntityType implements EntityType
 	{
 		$data = parent::_getDefaultValues();
 
-		// Customer default values
+		// Catalog product default values
 		$data = array_merge($data, array(
-			'is_visible'                => 1,
-			'is_system'                 => 0,
-			'input_filter'              => null,
-			'multiline_count'           => 0,
-			'validate_rules'            => null,
-			'data_model'                => null,
-			'sort_order'                => 0,
-			'group'                     => '<Label of tab the attribute appears in>',
-		    'position'                  => 999,
+			'frontend_input_renderer'       => NULL,
+			'is_global'                     => \Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL,
+			'is_visible'                    => 1,
+			'is_searchable'                 => 0,
+			'is_filterable'                 => 0,
+			'is_comparable'                 => 0,
+			'is_visible_on_front'           => 0,
+			'is_wysiwyg_enabled'            => 0,
+			'is_html_allowed_on_front'      => 0,
+			'is_visible_in_advanced_search' => 0,
+			'is_filterable_in_search'       => 0,
+			'used_in_product_listing'       => 0,
+			'used_for_sort_by'              => 0,
+			'apply_to'                      => NULL,
+			'position'                      => 999,
+			'is_configurable'               => 0,
+			'is_used_for_promo_rules'       => 0,
+			'group'                         => 'General',
 		));
+
+		// Merge in specific values for different frontend_input types
+		$data = array_merge($data, $this->_getFrontendInputSpecificDefaultValues());
+
+		return $data;
+	}
+
+	/**
+	 * Return default values for different frontend_input types
+	 *
+	 * @return array
+	 */
+	protected function _getFrontendInputSpecificDefaultValues()
+	{
+		switch ($this->frontendInput) {
+			case 'multiselect':
+				$data = $this->_getMultiselectDefaultValues();
+				break;
+
+			default:
+				$data = [];
+				break;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Default values for attributes with frontend_input of multiselect
+	 *
+	 * @return array
+	 */
+	protected function _getMultiselectDefaultValues()
+	{
+		$data = [
+			'backend'   => 'eav/entity_attribute_backend_array',
+		    'type'      => 'text',
+		    'input'     => 'multiselect',
+//		    'default'   => '<Attribute Option ID>',
+			'option' =>
+				array (
+					'values' =>
+						array (
+							'<Sort Order>' => '<Admin Store Label>',
+						),
+				),
+
+		];
+
 		return $data;
 	}
 
@@ -122,41 +179,30 @@ class Customer extends AbstractEntityType implements EntityType
  * startSetup() and endSetup() are intentionally omitted
  */
         
-/* @var \$setup Mage_Customer_Model_Entity_Setup */
-\$setup = new Mage_Customer_Model_Entity_Setup('core_setup');
+/* @var \$setup Mage_Catalog_Model_Resource_Setup */
+\$setup = new Mage_Catalog_Model_Resource_Setup('core_setup');
 
+/* 
+ *  Note that apply_to can accept a string of product types, e.g. 'simple,configurable,grouped' 
+ *  or omit it to apply to all product types
+ */
 \$data = $arrayCode;
-\$setup->addAttribute('customer', '" . $this->attribute . "', \$data);
+\$setup->addAttribute('catalog_product', '" . $this->attribute . "', \$data);
             ";
 
-	    $customerFormsScript = "
+		$labelsScript = "
 /*
- *  Note you only need to worry about form codes if the customer attribute is_system == 0 and is_visible == 1
- *
- *  mysql> select distinct(form_code) from customer_form_attribute;
- *  +----------------------------+
- *  | form_code                  |
- *  +----------------------------+
- *  | adminhtml_checkout         |
- *  | adminhtml_customer         |
- *  | adminhtml_customer_address |
- *  | checkout_register          |
- *  | customer_account_create    |
- *  | customer_account_edit      |
- *  | customer_address_edit      |
- *  | customer_register_address  |
- *  +----------------------------+
- *  8 rows in set (0.00 sec)
+ * Add different labels for multi-store setups
+ * Labels should be added in [store_id => label, ...] array format
  */
-
-\$customerAttribute = Mage::getSingleton('eav/config')->getAttribute('customer', '" . $this->attribute . "');
-\$customerAttribute->setData('used_in_forms', array(
-	'customer_account_create','customer_account_edit'
-));
-\$customerAttribute->save();
+// \$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', '" . $this->attribute . "');
+// \$attribute->setStoreLabels(array (
+//      '<store_id>' => 'Label',
+// ));
+// \$attribute->save();
 ";
 
-	    $script .= $customerFormsScript;
+        $script .= $labelsScript;
 
         return $script;
     }

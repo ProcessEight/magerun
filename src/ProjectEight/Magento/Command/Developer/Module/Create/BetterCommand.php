@@ -1,21 +1,21 @@
 <?php
 /**
- * sfrost2004
+ * ProjectEight
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact sfrost2004 for more information.
+ * needs please contact ProjectEight for more information.
  *
- * @category    sfrost2004
- * @package     sfrost2004
- * @copyright   Copyright (c) 2016 sfrost2004
- * @author      Simon Frost, sfrost2004
+ * @category    ProjectEight
+ * @package     ProjectEight
+ * @copyright   Copyright (c) 2016 ProjectEight
+ * @author      Simon Frost, ProjectEight
  *
  */
 
-namespace sfrost2004\Magento\Command\Developer\Module\Create;
+namespace ProjectEight\Magento\Command\Developer\Module\Create;
 
 use InvalidArgumentException;
 use N98\Magento\Command\AbstractMagentoCommand;
@@ -86,7 +86,7 @@ class BetterCommand extends AbstractMagentoCommand
             ->addOption('author-name', null, InputOption::VALUE_OPTIONAL, 'Author for readme.md or composer.json')
             ->addOption('author-email', null, InputOption::VALUE_OPTIONAL, 'Author for readme.md or composer.json')
             ->addOption('description', null, InputOption::VALUE_OPTIONAL, 'Description for readme.md or composer.json')
-            ->setDescription('Create and register a new magento module with adminhtml and system XML files [sfrost2004].');
+            ->setDescription('Create and register a new magento module with adminhtml and system XML files [ProjectEight].');
     }
 
     /**

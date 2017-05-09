@@ -1,6 +1,6 @@
 <?php
 
-namespace sfrost2004\Magento\Command\Developer\Environment;
+namespace ProjectEight\Magento\Command\Developer\Environment;
 
 use Exception;
 use InvalidArgumentException;
@@ -19,12 +19,12 @@ class SetCommand extends AbstractMagentoCommand
 		$this
 			->setName('dev:env:set')
 			->addArgument('env', InputArgument::OPTIONAL, 'An environment to configure.')
-			->setDescription('Modifies a Magento installation according to pre-set values [sfrost2004]');
+			->setDescription('Updates the config to match values set in ~/.n98-magerun.yaml [ProjectEight]');
 
 		$help = <<<HELP
    $ n98-magerun.phar dev:env:set [env]
 
-Updates the config
+Updates the config to match values set in ~/.n98-magerun.yaml. See https://github.com/ProjectEight/magerun for detailed instructions
 
 HELP;
 		$this->setHelp($help);
