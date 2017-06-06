@@ -14,6 +14,7 @@ commands:
     - ProjectEight\Magento\Command\Eav\Attribute\AddCommand
     - ProjectEight\Magento\Command\Developer\Environment\SetCommand
     - ProjectEight\Magento\Command\Developer\Module\Create\BetterCommand
+    - ProjectEight\Magento\Command\Developer\Module\RewriteList\BetterCommand
     - ProjectEight\Magento\Command\Developer\Toggle\ShippingMethodCommand
 
   ProjectEight\Magento\Command\Developer\Environment\SetCommand:
