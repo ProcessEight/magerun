@@ -15,6 +15,7 @@ commands:
     - ProjectEight\Magento\Command\Developer\Environment\SetCommand
     - ProjectEight\Magento\Command\Developer\Module\Create\BetterCommand
     - ProjectEight\Magento\Command\Developer\Toggle\ShippingMethodCommand
+    - ProjectEight\Magento\Command\System\ReportCommand
 
   ProjectEight\Magento\Command\Developer\Environment\SetCommand:
     environments:
