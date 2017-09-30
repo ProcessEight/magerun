@@ -6,8 +6,8 @@ use LogicException;
 use N98\Magento\Command\AbstractMagentoCommand;
 use N98\Magento\Command\CommandAware;
 use N98\Magento\Command\CommandConfigAware;
-use N98\Magento\Command\System\Check\Result;
-use N98\Magento\Command\System\Check\ResultCollection;
+use ProjectEight\Magento\Command\System\Report\Result;
+use ProjectEight\Magento\Command\System\Report\ResultCollection;
 use N98\Util\Console\Helper\Table\Renderer\RendererFactory;
 use N98\Util\Unicode\Charset;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +21,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ReportCommand extends AbstractMagentoCommand
 {
+    /**
+     * @var int
+     */
+    const UNICODE_INFO_CHAR = 2139;
+
     /**
      * Command config
      *
@@ -114,6 +119,12 @@ HELP;
                     case Result::STATUS_WARNING:
                     case Result::STATUS_ERROR:
                         $output->write('<error>' . Charset::convertInteger(Charset::UNICODE_CROSS_CHAR) . '</error> ');
+                        break;
+
+                    case Result::STATUS_INFO:
+//                        $output->write(
+//                            '<info>' . Charset::convertInteger(self::UNICODE_INFO_CHAR) . '</info> '
+//                        );
                         break;
 
                     case Result::STATUS_OK:
