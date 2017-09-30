@@ -32,13 +32,7 @@ class ReportCommand extends AbstractMagentoCommand
     {
         $this
             ->setName('sys:report')
-            ->setDescription('Interrogates a Magento system and produces a README.md in markdown format')
-            ->addOption(
-                'format',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Output Format. One of [' . implode(',', RendererFactory::getFormats()) . ']'
-            );
+            ->setDescription('Interrogates a Magento system and produces a README.md in markdown format');
 
         $help = <<<HELP
 - Checks missing files and folders
@@ -66,18 +60,14 @@ HELP;
 
         $results = new ResultCollection();
 
-        foreach ($this->config['checks'] as $checkGroup => $checkGroupClasses) {
+        foreach ($this->config['reports'] as $checkGroup => $checkGroupClasses) {
             $results->setResultGroup($checkGroup);
             foreach ($checkGroupClasses as $checkGroupClass) {
                 $this->_invokeCheckClass($results, $checkGroupClass);
             }
         }
 
-        if ($input->getOption('format')) {
-            $this->_printTable($input, $output, $results);
-        } else {
-            $this->_printResults($output, $results);
-        }
+        $this->_printResults($output, $results);
     }
 
     /**
@@ -86,24 +76,24 @@ HELP;
      */
     protected function _invokeCheckClass(ResultCollection $results, $checkGroupClass)
     {
-        $check = $this->_createCheck($checkGroupClass);
+        $report = $this->_createCheck($checkGroupClass);
 
         switch (true) {
-            case $check instanceof Check\SimpleCheck:
-                $check->check($results);
+            case $report instanceof Report\SimpleReport:
+                $report->report($results);
                 break;
 
-            case $check instanceof Check\StoreCheck:
-                $this->checkStores($results, $checkGroupClass, $check);
+            case $report instanceof Report\StoreReport:
+                $this->checkStores($results, $checkGroupClass, $report);
                 break;
 
-            case $check instanceof Check\WebsiteCheck:
-                $this->checkWebsites($results, $checkGroupClass, $check);
+            case $report instanceof Report\WebsiteReport:
+                $this->checkWebsites($results, $checkGroupClass, $report);
                 break;
 
             default:
                 throw new LogicException(
-                    sprintf('Unhandled check-class "%s"', $checkGroupClass)
+                    sprintf('Undefined Report class "%s"', $checkGroupClass)
                 );
         }
     }
