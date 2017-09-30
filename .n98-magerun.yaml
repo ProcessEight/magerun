@@ -17,6 +17,16 @@ commands:
     - ProjectEight\Magento\Command\Developer\Toggle\ShippingMethodCommand
     - ProjectEight\Magento\Command\System\ReportCommand
 
+  ProjectEight\Magento\Command\System\ReportCommand:
+    reports:
+      versions:
+        - ProjectEight\Magento\Command\System\Report\Versions\MagentoVersionReport
+        - ProjectEight\Magento\Command\System\Report\Versions\MagentoEditionReport
+      patches:
+        - ProjectEight\Magento\Command\System\Report\Patches\AppliedReport
+      overrides:
+        - ProjectEight\Magento\Command\System\Report\Overrides\LocalReport
+
   ProjectEight\Magento\Command\Developer\Environment\SetCommand:
     environments:
       localhost:
