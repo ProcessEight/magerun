@@ -22,6 +22,7 @@ commands:
       versions:
         - ProjectEight\Magento\Command\System\Report\Versions\MagentoVersionReport
         - ProjectEight\Magento\Command\System\Report\Versions\MagentoEditionReport
+        - ProjectEight\Magento\Command\System\Report\Versions\CacheReport
       patches:
         - ProjectEight\Magento\Command\System\Report\Patches\AppliedReport
       overrides:
