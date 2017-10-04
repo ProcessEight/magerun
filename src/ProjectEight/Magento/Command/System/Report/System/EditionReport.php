@@ -1,17 +1,17 @@
 <?php
 
-namespace ProjectEight\Magento\Command\System\Report\Versions;
+namespace ProjectEight\Magento\Command\System\Report\System;
 
 use ProjectEight\Magento\Command\System\Report\Result;
 use ProjectEight\Magento\Command\System\Report\ResultCollection;
 use ProjectEight\Magento\Command\System\Report\SimpleReport;
 
 /**
- * Class MagentoVersionReport
+ * Class EditionReport
  *
- * @package ProjectEight\Magento\Command\System\Report\Versions
+ * @package ProjectEight\Magento\Command\System\Report\System
  */
-class MagentoVersionReport implements SimpleReport
+class EditionReport implements SimpleReport
 {
     /**
      * @param ResultCollection $results
@@ -22,10 +22,10 @@ class MagentoVersionReport implements SimpleReport
     {
         $result = $results->createResult();
 
-        $version = \Mage::getVersion();
+        $edition = \Mage::getEdition();
 
         $result->setStatus(Result::STATUS_INFO);
-        $result->setMessage("<info>Version: <comment>$version</comment>.</info>");
+        $result->setMessage("<info>Edition: <comment>$edition</comment>. </info>");
     }
 
 }

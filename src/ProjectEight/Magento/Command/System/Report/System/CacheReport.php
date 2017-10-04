@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectEight\Magento\Command\System\Report\Versions;
+namespace ProjectEight\Magento\Command\System\Report\System;
 
 use ProjectEight\Magento\Command\System\Report\Result;
 use ProjectEight\Magento\Command\System\Report\ResultCollection;
@@ -9,7 +9,7 @@ use ProjectEight\Magento\Command\System\Report\SimpleReport;
 /**
  * Class MagentoVersionReport
  *
- * @package ProjectEight\Magento\Command\System\Report\Versions
+ * @package ProjectEight\Magento\Command\System\Report\System
  */
 class CacheReport implements SimpleReport
 {

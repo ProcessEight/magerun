@@ -19,10 +19,10 @@ commands:
 
   ProjectEight\Magento\Command\System\ReportCommand:
     reports:
-      versions:
-        - ProjectEight\Magento\Command\System\Report\Versions\MagentoVersionReport
-        - ProjectEight\Magento\Command\System\Report\Versions\MagentoEditionReport
-        - ProjectEight\Magento\Command\System\Report\Versions\CacheReport
+      system:
+        - ProjectEight\Magento\Command\System\Report\System\VersionReport
+        - ProjectEight\Magento\Command\System\Report\System\EditionReport
+        - ProjectEight\Magento\Command\System\Report\System\CacheReport
       patches:
         - ProjectEight\Magento\Command\System\Report\Patches\AppliedReport
       overrides:
