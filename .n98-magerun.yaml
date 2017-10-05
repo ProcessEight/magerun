@@ -23,6 +23,10 @@ commands:
         - ProjectEight\Magento\Command\System\Report\System\VersionReport
         - ProjectEight\Magento\Command\System\Report\System\EditionReport
         - ProjectEight\Magento\Command\System\Report\System\CacheReport
+      payments:
+        - ProjectEight\Magento\Command\System\Report\Payments\PaymentMethodsReport
+      shipping:
+        - ProjectEight\Magento\Command\System\Report\Shipping\ShippingMethodsReport
       patches:
         - ProjectEight\Magento\Command\System\Report\Patches\AppliedReport
       overrides:

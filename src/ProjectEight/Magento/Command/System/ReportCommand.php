@@ -98,7 +98,7 @@ HELP;
 
             default:
                 throw new LogicException(
-                    sprintf('Undefined Report class "%s"', $checkGroupClass)
+                    sprintf('Undefined Report class "%s". Have you added a new switch..case branch on line %d of %s?', $checkGroupClass, __LINE__, __CLASS__)
                 );
         }
     }
