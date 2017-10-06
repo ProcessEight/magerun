@@ -35,6 +35,9 @@ class ShippingMethodsReport implements SimpleReport, CommandAware
         foreach ($this->getShippingMethodsList() as $method) {
             $table .= "<info>{$method['title']}</info>: {$method['status']}\n";
         }
+        if($table == "") {
+            $table = "<info>No shipping methods are enabled</info>";
+        }
 
         $result->setMessage("{$table}");
     }
@@ -56,7 +59,7 @@ class ShippingMethodsReport implements SimpleReport, CommandAware
         $methods = \Mage::app()->getConfig()->getNode('default/carriers');
         foreach ($methods->children() as $method) {
             /** @var \Mage_Core_Model_Config_Element $method */
-            if($method->active == "0") {
+            if(!$method->active || !$method->title || $method->active == "0") {
                 continue;
             }
             $list[] = [

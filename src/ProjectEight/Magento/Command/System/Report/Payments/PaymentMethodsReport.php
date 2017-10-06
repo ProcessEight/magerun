@@ -33,7 +33,10 @@ class PaymentMethodsReport implements SimpleReport, CommandAware
 
         $table = "";
         foreach ($this->getPaymentMethodsList() as $method) {
-            $table .= "<info>{$method['title']}</info>: {$method['status']}\n";
+            $table .= "<info>{$method['title']} ({$method['code']})</info>: {$method['status']}\n";
+        }
+        if($table == "") {
+            $table = "<info>No payment methods are enabled</info>";
         }
 
         $result->setMessage("{$table}");
@@ -56,7 +59,7 @@ class PaymentMethodsReport implements SimpleReport, CommandAware
         $methods = \Mage::app()->getConfig()->getNode('default/payment');
         foreach ($methods->children() as $method) {
             /** @var \Mage_Core_Model_Config_Element $method */
-            if($method->active == "0") {
+            if(!$method->active || !$method->title || $method->active == "0") {
                 continue;
             }
             $list[] = [
