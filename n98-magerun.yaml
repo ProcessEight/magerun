@@ -2,11 +2,11 @@
 
 autoloaders:
   # Namespace => path to your libs
-  ProjectEight: /Users/projecteight/PhpStormProjects/projecteight-magerun/src
+  ProjectEight: %module%/src
 
 twig:
   baseDirs:
-    - /Users/projecteight/PhpStormProjects/projecteight-magerun/res/twig/
+    - %module%/res/twig/
 
 commands:
   customCommands:
@@ -74,48 +74,17 @@ commands:
               system/smtp/disable: 1
               dev/log/active: 1
               dev/restrict/allow_ips: 127.0.0.1
-      dev:
-        config:
-          websites:
-            1:
-              general/country/default: FR
-          stores:
-            3:
-              general/country/default: DE
+#      dev:
+#        config:
+#          websites:
+#            1:
+#              general/country/default: FR
+#          stores:
+#            3:
+#              general/country/default: DE
 
   ProjectEight\Magento\Command\Developer\Module\Create\BetterCommand:
     additionalFiles:
       "dev/module/create/app/Helper/Data.twig": "{{moduleDir}}/Helper/Data.php"
       "dev/module/create/app/data/data-install-0.1.0.twig": "{{moduleDir}}/data/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/data-install-0.1.0.php"
       "dev/module/create/app/sql/install-0.1.0.twig": "{{moduleDir}}/sql/{{ vendorNamespace | lower }}_{{ moduleName | lower }}_setup/install-0.1.0.php"
-
-  N98\Magento\Command\Installer\InstallCommand:
-    magento-packages:
-      - name: magento-local-1.9.2.4
-        version: 1.9.2.4
-        dist:
-          url: http://magento.local/versions/magento-1.9.2.4.tar.gz
-          type: tar
-        extra:
-          sample-data: sample-data-local-1.9.0.0
-    demo-data-packages:
-      - name: sample-data-local-1.9.0.0
-        version: 1.9.0.0
-        dist:
-          url: http://magento.local/extras/sample-data/magento-sample-data-1.9.0.0.tar.gz
-          type: tar
-    installation:
-      defaults:
-        currency: GBP
-        locale: en_GB
-        timezone: Europe/London
-        use_secure: no
-        use_rewrites: yes
-        session_save: files
-        admin_username: admin
-        admin_firstname: Joe
-        admin_lastname: Bloggs
-        admin_password: password123
-        admin_frontname: admin
-        admin_email: projecteight@example.com
-        encryption_key:
