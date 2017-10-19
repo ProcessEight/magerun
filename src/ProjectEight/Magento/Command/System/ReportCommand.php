@@ -36,8 +36,8 @@ class ReportCommand extends AbstractMagentoCommand
     protected function configure()
     {
         $this
-            ->setName('sys:report')
-            ->setDescription('Interrogates a Magento system and produces a README.md in markdown format');
+            ->setName('project-eight:sys:report')
+            ->setDescription('Interrogates a Magento system and produces a README in markdown format');
 
         $help = <<<HELP
 - Checks missing files and folders
@@ -98,7 +98,7 @@ HELP;
 
             default:
                 throw new LogicException(
-                    sprintf('Undefined Report class "%s"', $checkGroupClass)
+                    sprintf('Undefined Report class "%s". Have you added a new switch..case branch on line %d of %s?', $checkGroupClass, __LINE__, __CLASS__)
                 );
         }
     }

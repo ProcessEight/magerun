@@ -1,17 +1,17 @@
 <?php
 
-namespace ProjectEight\Magento\Command\System\Report\Versions;
+namespace ProjectEight\Magento\Command\System\Report\System;
 
 use ProjectEight\Magento\Command\System\Report\Result;
 use ProjectEight\Magento\Command\System\Report\ResultCollection;
 use ProjectEight\Magento\Command\System\Report\SimpleReport;
 
 /**
- * Class MagentoVersionReport
+ * Class VersionReport
  *
- * @package ProjectEight\Magento\Command\System\Report\Versions
+ * @package ProjectEight\Magento\Command\System\Report\System
  */
-class MagentoVersionReport implements SimpleReport
+class VersionReport implements SimpleReport
 {
     /**
      * @param ResultCollection $results
