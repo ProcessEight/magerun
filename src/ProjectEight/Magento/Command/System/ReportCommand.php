@@ -36,8 +36,8 @@ class ReportCommand extends AbstractMagentoCommand
     protected function configure()
     {
         $this
-            ->setName('sys:report')
-            ->setDescription('Interrogates a Magento system and produces a README.md in markdown format');
+            ->setName('project-eight:sys:report')
+            ->setDescription('Interrogates a Magento system and produces a README in markdown format');
 
         $help = <<<HELP
 - Checks missing files and folders
