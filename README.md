@@ -19,6 +19,17 @@ commands:
 
 ## Commands
 
+### sys:patch-scanner
+Scans a Magento environment to detect if the specified SUPEE patch has been installed.
+
+#### Plan
+* [x] Pass patch file as CLI argument
+* [x] Command parses list of files from patch file
+* [ ] Command parses 'hunks' from patch file
+* [ ] Then attempts to find them in the same location
+* [ ] Command outputs report which states how many of the hunks in the patch file matched
+
+
 ### dev:env:set
 Update a Magento environment to use the specified settings. Run this command after setting up a new Magento 1.x instance to set default config values.
 
